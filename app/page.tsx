@@ -1,65 +1,143 @@
+"use client";
+
+import { useState } from "react";
+import QRCodeTeste from ".././app/images/qrcodeTeste.png";
+import modeloPix from ".././app/images/modeloPix.jpg";
+import gerarPayloadPix from "../app/api/Gerapayload";
+import formatarChave from "./function/formatarChave";
 import Image from "next/image";
 
 export default function Home() {
+  const [key, setKey] = useState("");
+  const [name, setName] = useState("");
+  const [city, setCity] = useState("");
+  const [amount, setAmount] = useState("");
+  const [qrCode, setQrCode] = useState("");
+  const [tipoChave, setTipoChave] = useState("");
+
+  const nomeTeste = "joao do vale serra";
+  const chaveTeste = "75982318123";
+
+  async function gerarQR() {
+    if (!key || !name || !city) return;
+
+    const payload = gerarPayloadPix({
+      chave: formatarChave(key, tipoChave),
+      nome: name,
+      cidade: city,
+      valor: amount,
+    });
+
+    //  TODO concerta o nome tem chave em ingels e depois em portugues
+    //   const qr = await QRCode.toDataURL(payload);
+
+    //   setQrCode(qr);
+    //   setName("");
+    //   setCity("");
+    //   setAmount("");
+    //   setTipoChave("");
+    //   setKey("");
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <div className="relative w-screen h-screen">
+      <h1>Gerador de QR Code Pix</h1>
+
+      <select
+        name=""
+        id=""
+        value={tipoChave}
+        onChange={(e) => setTipoChave(e.target.value)}
+        className=" m-10 p-5"
+      >
+        <option value="">Selecione o tipo da chave</option>
+
+        <option value="telefone">Telefone</option>
+        <option value="email">Email</option>
+        <option value="cpf">CPF</option>
+        <option value="aleatória">Chave Aleatória</option>
+      </select>
+
+      <form className=" w-full h-full flex flex-col  ">
+        <input
+          placeholder="Chave Pix"
+          value={key}
+          onChange={(e) => setKey(e.target.value)}
+          className="w-175 p-5 m-10"
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+        <input
+          placeholder="Nome"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="w-175 p-5 m-10"
+        />
+        <input
+          placeholder="Cidade"
+          value={city}
+          onChange={(e) => setCity(e.target.value)}
+          className="w-175 p-5 m-10"
+        />
+        <input
+          placeholder="Valor (opcional)"
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+          className="w-175 p-5 m-10"
+        />
+        <div className="w-full flex justify-start m-8">
+          <button onClick={gerarQR} className="curso-pointer">
+            Gerar QR Code
+          </button>
+        </div>
+      </form>
+      <div >
+        {/* Fundo do comprovante */}
+        <Image
+          src={modeloPix}
+          alt="QR Code Pix"
+          width={500}
+          height={400}
+          className="absolute top-10 right-40 z-0"
+        />
+
+        {/* Conteúdo em cima do comprovante */}
+        <div className="absolute top-10 right-16 w-125 h-125 z-10">
+          {/* QR Code */}
+          <Image
+            src={QRCodeTeste}
+            alt="QR"
+            className="absolute top-60  left-2 w-80"
+          />
+
+          {/* Nome */}
+          <p className="absolute -bottom-32 left-25 text-red-500 font-bold text-2xl ">
+            {nomeTeste}
+          </p>
+
+          {/* Chave Pix */}
+          <p className="absolute -bottom-24 left-35 text-red-500 font-bold text-2xl">
+            {chaveTeste}
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+      </div>
     </div>
   );
 }
+
+// const styles = {
+//   container: {
+//     display: "flex",
+//     flexDirection: "column",
+//     alignItems: "center",
+//     gap: "10px",
+//     marginTop: "50px",
+//   },
+//   input: {
+//     padding: "20px",
+//     width: "700px",
+//     gap: "20px",
+//   },
+//   button: {
+//     padding: "10px 20px",
+//     cursor: "pointer",
+//   },
+// };
